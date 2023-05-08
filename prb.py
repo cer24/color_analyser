@@ -1,4 +1,5 @@
 import streamlit as st
+import pymongo
 from pymongo import MongoClient
 from PIL import Image, ImageDraw
 from sklearn.cluster import KMeans
