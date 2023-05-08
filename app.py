@@ -15,11 +15,7 @@ users = db.users
 collection = db.palette
 
 
-def copy_to_clipboard(hex_code):
-    pyperclip.copy(hex_code)
-    print(f"Copied {hex_code} to clipboard")
 
-copy_to_clipboard(hex_code)
 
 def app():
     # Connect to the users collection
@@ -161,6 +157,9 @@ def display_saved_palettes():
                 st.write(hex_code)
 
 
+def copy_to_clipboard(hex_code):
+    pyperclip.copy(hex_code)
+    print(f"Copied {hex_code} to clipboard")
 
 
 def color_analysis():
