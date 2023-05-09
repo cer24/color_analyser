@@ -10,7 +10,7 @@ import time
 
 # Connect to the MongoDB database
 client = MongoClient("mongodb+srv://shruti:tbhl1234@atlascluster.iukavux.mongodb.net/?retryWrites=true&w=majority")
-db = client.color_db
+db = client.deploy
 users = db.users
 collection = db.palette
 
