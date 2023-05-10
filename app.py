@@ -81,7 +81,7 @@ def app():
                     color_analysis()
                 else:
                     st.error("Invalid username or password")
-            st.image("images/login.png",width=600)
+            st.image("login.png",width=600)
 
         elif active_tab == "Create Account":
             st.sidebar.subheader("Create a new account")
@@ -99,7 +99,7 @@ def app():
                         st.sidebar.error("Username already taken")
                 else:
                     st.sidebar.error("Passwords do not match")
-            st.image("images/signup.png",width=600)
+            st.image("signup.png",width=600)
 
 
 
