@@ -44,7 +44,7 @@ def app():
         st.success("You have been logged out")
 
     # Set page title and description
-    st.set_page_config(page_title="Proto  Color Analyzer", page_icon=":art:", layout="wide")
+    st.set_page_config(page_title="Color Analyzer", page_icon=":art:", layout="wide")
 
     # Define the sidebar
     st.sidebar.title("Color Analyzer")
@@ -81,7 +81,7 @@ def app():
                     color_analysis()
                 else:
                     st.error("Invalid username or password")
-            st.image("login.png",width=600)
+            st.image("images/login.png",width=600)
 
         elif active_tab == "Create Account":
             st.sidebar.subheader("Create a new account")
@@ -99,7 +99,7 @@ def app():
                         st.sidebar.error("Username already taken")
                 else:
                     st.sidebar.error("Passwords do not match")
-            st.image("signup.png",width=600)
+            st.image("images/signup.png",width=600)
 
 
 
