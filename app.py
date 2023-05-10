@@ -1,26 +1,24 @@
 import streamlit as st
-import pymongo
 from pymongo import MongoClient
 from PIL import Image, ImageDraw
 from sklearn.cluster import KMeans
 import numpy as np
-import clipboard
+import pyperclip 
 import matplotlib.pyplot as plt
 import time
 
 # Connect to the MongoDB database
 client = MongoClient("mongodb+srv://shruti:tbhl1234@atlascluster.iukavux.mongodb.net/?retryWrites=true&w=majority")
-db = client.deploy
+db = client.prb
 users = db.users
 collection = db.palette
 
 
-
-
+st.session_state.hex_codes = []
 def app():
     # Connect to the users collection
-    users = db.users
-    st.session_state.hex_codes = []
+    #users = db.users
+    
 
 
     # Authentication function
@@ -46,7 +44,7 @@ def app():
         st.success("You have been logged out")
 
     # Set page title and description
-    st.set_page_config(page_title="Color Analyzer", page_icon=":art:", layout="wide")
+    st.set_page_config(page_title="Proto  Color Analyzer", page_icon=":art:", layout="wide")
 
     # Define the sidebar
     st.sidebar.title("Color Analyzer")
@@ -59,8 +57,9 @@ def app():
         st.sidebar.tabs([" "])
         st.sidebar.button("Logout", on_click=logout)
         st.sidebar.divider()
-        if st.sidebar.button("Save Colors"):
-            save_to_db(st.session_state.hex_codes)
+        #if st.sidebar.button("Save Colors"):
+            #save_to_db(hex_codes)
+
         st.sidebar.button("View Saved Palettes", on_click=display_saved_palettes)
         # Run color analysis page
         color_analysis()
@@ -82,7 +81,7 @@ def app():
                     color_analysis()
                 else:
                     st.error("Invalid username or password")
-            st.image("login.png",width=600)
+            st.image("images/login.png",width=600)
 
         elif active_tab == "Create Account":
             st.sidebar.subheader("Create a new account")
@@ -100,7 +99,7 @@ def app():
                         st.sidebar.error("Username already taken")
                 else:
                     st.sidebar.error("Passwords do not match")
-            st.image("signup.png",width=600)
+            st.image("images/signup.png",width=600)
 
 
 
@@ -127,9 +126,6 @@ def save_to_db(hex_codes):
         st.success("Color palette saved to your account")
 
 
-
-    # Display user's saved color palettes
-# Display user's saved color palettes
 def display_saved_palettes():
     # Check if the user is logged in
     if not st.session_state.get("authenticated"):
@@ -144,22 +140,20 @@ def display_saved_palettes():
     
     # Display each color palette
     #with st.expander("Saved Color Palettes"):
-    st.write("Your saved color palettes:")
-    for palette in palettes:
-        hex_codes = palette["hex_codes"]
-        st.write("Palette:")
-        col_count = len(hex_codes)
-        cols = st.columns(max(len(hex_codes), 1))
-        for i, hex_code in enumerate(hex_codes):
-            with cols[i]:
-                color_box = f'<div style="background-color:{hex_code}; width:100px; height:50px;"></div>'
-                st.markdown(color_box, unsafe_allow_html=True)
-                st.write(hex_code)
+    with st.expander("Saved Palettes"):
+        st.write("Your saved color palettes:")
+        for palette in palettes:
+            hex_codes = palette["hex_codes"]
+            st.write("Palette:")
+            col_count = len(hex_codes)
+            cols = st.columns(max(len(hex_codes), 1))
+            for i, hex_code in enumerate(hex_codes):
+                with cols[i]:
+                    color_box = f'<div style="background-color:{hex_code}; width:100px; height:50px;"></div>'
+                    st.markdown(color_box, unsafe_allow_html=True)
+                    st.write(hex_code)
 
 
-def copy_to_clipboard(hex_code):
-    pyperclip.copy(hex_code)
-    print(f"Copied {hex_code} to clipboard")
 
 
 def color_analysis():
@@ -206,6 +200,7 @@ def color_analysis():
                     # Run KMeans algorithm
                     kmeans = KMeans(n_clusters=n_clusters)
                     kmeans.fit(pixel_matrix)
+                    colors= kmeans.cluster_centers_.astype(int)
 
                     # Replace each pixel with its corresponding cluster center
                     new_image_array = np.zeros_like(pixel_matrix)
@@ -220,6 +215,8 @@ def color_analysis():
                         else:
                             index = hex_codes.index(hex_code)
                             color_counts[index] += 1
+
+                    st.session_state.hex_codes= hex_codes
 
                     # Create a new image with the computed colors
                     new_image_array = new_image_array.reshape(width, height, depth)
@@ -271,8 +268,13 @@ def color_analysis():
                             st.button(
                                 f"Copy to clipboard",
                                 key=hex_code,
-                                on_click=copy_to_clipboard(hex_code)
+                                on_click=pyperclip.copy(hex_code),
+                                args=(f"Copied {hex_code} to clipboard",),
+                                help=hex_code,
                             )
+                    
+                    
+
                     # Create a file to save the hex codes
                     with open("hex_codes.txt", "w") as file:
                         for hex_code in hex_codes:
@@ -286,7 +288,7 @@ def color_analysis():
                         mime="text/plain"
                     )
 
-                    #st.button("Save Colors", on_click=save_to_db(hex_codes))
+                    st.button("Save Colors", on_click=save_to_db(hex_codes))
                     # Save the hex codes to a file and store to MongoDB
 
 
